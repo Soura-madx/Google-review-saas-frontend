@@ -40,7 +40,7 @@ export default function ReviewPage() {
     setIsCopied(false);
 
     try {
-      const res = await axios.post('http://localhost:8000/api/reviews/generate', {
+      const res = await axios.post('https://google-review-saas-backend.onrender.com/api/reviews/generate', {
         cafeName: business.cafeName,
         selectedTag: tag
       });
