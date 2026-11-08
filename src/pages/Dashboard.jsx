@@ -11,7 +11,7 @@ export default function Dashboard() {
     const fetchProfile = async () => {
       const token = localStorage.getItem('token');
       try {
-        const res = await axios.get('http://localhost:8000/api/business/profile', {
+        const res = await axios.get('https://google-review-saas-backend.onrender.com/api/business/profile', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setProfile(res.data);

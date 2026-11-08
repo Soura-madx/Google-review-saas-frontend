@@ -23,7 +23,7 @@ export default function ReviewPage() {
   useEffect(() => {
     const fetchBusiness = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/business/public/${businessId}`);
+        const res = await axios.get(`https://google-review-saas-backend.onrender.com/api/business/public/${businessId}`);
         setBusiness(res.data); // isme cafeName aur googleReviewLink aayega
       } catch (err) {
         setPageError("Invalid QR Code or Cafe not found.");

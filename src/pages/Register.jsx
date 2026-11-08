@@ -23,7 +23,7 @@ export default function Register() {
     setError('');
 
     try {
-      const res = await axios.post('http://localhost:8000/api/auth/register', formData);
+      const res = await axios.post('https://google-review-saas-backend.onrender.com/api/auth/register', formData);
       
       // Registration success hone par token save karein aur dashboard par bhej dein
       localStorage.setItem('token', res.data.token);
