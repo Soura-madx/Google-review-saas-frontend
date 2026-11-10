@@ -60,7 +60,7 @@ export default function ReviewPage() {
       setIsCopied(true);
       
       setTimeout(() => {
-        window.open(business.googleReviewLink, "_blank");
+        window.location.href = googleLink;
       }, 1500);
     } catch (err) {
       console.error("Copy failed", err);
