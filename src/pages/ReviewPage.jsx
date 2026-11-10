@@ -61,11 +61,11 @@ export default function ReviewPage() {
       
       setTimeout(() => {
         window.location.href = googleLink;
-      }, 1500);
+      }, 300);
     } catch (err) {
       console.error("Copy failed", err);
       // Fallback agar clipboard permission fail ho jaye
-      window.open(business.googleReviewLink, "_blank");
+      window.location.href = googleLink;
     }
   };
 
