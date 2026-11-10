@@ -60,12 +60,12 @@ export default function ReviewPage() {
       setIsCopied(true);
       
       setTimeout(() => {
-        window.location.href = googleLink;
-      }, 300);
+        window.open(business.googleReviewLink, "_blank");
+      }, 1500);
     } catch (err) {
       console.error("Copy failed", err);
       // Fallback agar clipboard permission fail ho jaye
-      window.location.href = googleLink;
+      window.open(business.googleReviewLink, "_blank");
     }
   };
 
