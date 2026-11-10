@@ -84,7 +84,7 @@ export default function Dashboard() {
           <div className="bg-white p-3 rounded-2xl shadow-[0_0_20px_rgba(255,255,255,0.1)] mb-6">
             <QRCodeCanvas 
               id="qr-gen" 
-              value={customerLink} 
+              value={customerLink.trim()} 
               size={180} 
               level={"H"}
               includeMargin={true}
