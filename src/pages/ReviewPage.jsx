@@ -56,16 +56,17 @@ export default function ReviewPage() {
   // 3. Copy aur Google Maps par bhejna
   const handleCopyAndPost = async () => {
     try {
+      // 1. Pehle text ko clipboard par copy karo
       await navigator.clipboard.writeText(generatedReview);
       setIsCopied(true);
-      
-      setTimeout(() => {
-        window.open(business.googleReviewLink, "_blank");
-      }, 1500);
     } catch (err) {
       console.error("Copy failed", err);
-      // Fallback agar clipboard permission fail ho jaye
-      window.open(business.googleReviewLink, "_blank");
+    }
+
+    // 2. Timeout hata kar direct page redirect karo. 
+    // Safari aur Chrome dono isko bina kisi popup blocker ke allow karenge.
+    if (business && business.googleReviewLink) {
+      window.location.href = business.googleReviewLink;
     }
   };
 
