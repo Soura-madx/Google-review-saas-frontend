@@ -48,7 +48,7 @@ const LandingPage = () => {
             A smart QR-based system that uses AI to write reviews for your customers. No typing effort required. Boost your cafe's local ranking instantly.
           </p>
 
-          {/* New: Hero Section CTA */}
+          {/* Hero Section CTA */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-12">
             <button 
               onClick={() => handleWhatsAppBooking('3-Day Free Trial', 'Free')}
@@ -64,11 +64,52 @@ const LandingPage = () => {
             </button>
           </div>
 
-          {/* Video Placeholder (Adjusted for mobile aspect ratio) */}
-          <div className="relative w-full max-w-3xl mx-auto bg-gray-900 rounded-2xl overflow-hidden shadow-2xl aspect-video flex flex-col items-center justify-center border-4 border-gray-100 group cursor-pointer">
-            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
-            <PlayCircle className="w-16 h-16 md:w-20 md:h-20 text-white z-10 opacity-90 group-hover:scale-110 transition-transform" />
-            <p className="text-white font-medium mt-3 md:mt-4 z-10 text-sm md:text-base">Watch How It Works (1 Min)</p>
+          {/* 9:16 Video Section (Split Layout for Desktop) */}
+          <div className="mt-8 md:mt-16 bg-gradient-to-br from-blue-50 to-white rounded-3xl p-6 md:p-10 border border-blue-100 shadow-xl max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
+            
+            {/* Desktop Text (Hidden on mobile) */}
+            <div className="hidden md:flex flex-col justify-center flex-1 text-left">
+              <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-sm font-bold mb-6 w-fit">
+                <PlayCircle className="w-4 h-4" /> 30-Second Demo
+              </div>
+              <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-5 leading-tight">
+                See the AI Magic in Action ✨
+              </h3>
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                No time to read? Watch this quick video to see exactly how our smart system turns your happy customers into 5-star Google reviewers without any typing effort.
+              </p>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center gap-3 text-gray-800 font-semibold text-lg">
+                  <span className="bg-green-100 text-green-600 p-2 rounded-full shadow-sm"><CheckCircle className="w-5 h-5"/></span> 
+                  Customer Scans QR
+                </li>
+                <li className="flex items-center gap-3 text-gray-800 font-semibold text-lg">
+                  <span className="bg-green-100 text-green-600 p-2 rounded-full shadow-sm"><CheckCircle className="w-5 h-5"/></span> 
+                  AI Auto-Types Review
+                </li>
+                <li className="flex items-center gap-3 text-gray-800 font-semibold text-lg">
+                  <span className="bg-green-100 text-green-600 p-2 rounded-full shadow-sm"><CheckCircle className="w-5 h-5"/></span> 
+                  Customer Hits 'Post'
+                </li>
+              </ul>
+              <div className="flex items-center gap-2 text-[#4285F4] font-bold text-lg animate-pulse">
+                Click play to watch <ArrowRight className="w-6 h-6" />
+              </div>
+            </div>
+
+            {/* Video Player with Full Controls (9:16 Ratio) */}
+            <div className="relative w-[260px] md:w-[320px] shrink-0 aspect-[9/16] bg-gray-900 rounded-[2rem] overflow-hidden shadow-2xl flex flex-col items-center justify-center border-[6px] border-gray-800">
+              
+              <video 
+                src="/video.mp4" 
+                className="w-full h-full object-cover"
+                controls
+                playsInline 
+                preload="metadata"
+              />
+              
+            </div>
+
           </div>
         </div>
       </section>
@@ -225,7 +266,7 @@ const LandingPage = () => {
         </div>
       </footer>
 
-      {/* MOBILE STICKY BOTTOM CTA (Only visible on small screens) */}
+      {/* MOBILE STICKY BOTTOM CTA */}
       <div className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50">
         <button 
           onClick={() => handleWhatsAppBooking('3-Day Free Trial', 'Free Mobile Request')}
