@@ -1,12 +1,37 @@
 export const businessCategories = {
-  cafe: { label: "Cafe & Restaurant", suggestions: ["Great Coffee ☕", "Amazing Vibe ✨", "Delicious Food 🍔", "Friendly Staff 👥", "Fast Service ⚡", "Must Visit! 🌟"] },
-  salon: { label: "Salon & Spa", suggestions: ["Relaxing Massage 💆‍♀️", "Awesome Haircut ✂️", "Clean & Hygienic 🧼", "Professional Staff 👔", "Great Ambience 🌸", "Value for Money 💰"] },
-  clinic: { label: "Dental & Medical Clinic", suggestions: ["Painless Treatment 🦷", "Experienced Doctor 👨‍⚕️", "Short Wait Time ⏱️", "Clean & Safe Clinic 🏥", "Caring Staff ❤️", "Highly Recommended 👍"] },
-  hotel: { label: "Hotel & Resort", suggestions: ["Comfortable Beds 🛏️", "Clean Rooms 🧹", "Great View 🌅", "Tasty Breakfast 🍳", "Polite Staff 🛎️", "Peaceful Stay 🌿"] },
-  auto_repair: { label: "Car Wash & Auto Repair", suggestions: ["Quick Service ⚡", "Honest Mechanic 👨‍🔧", "Deep Cleaning 🧽", "Fair Pricing 💵", "Genuine Parts ⚙️", "Fixed my Issue 🚗"] },
-  gym: { label: "Gym & Fitness Studio", suggestions: ["Top Equipment 🏋️", "Helpful Trainers 💪", "Clean Washrooms 🚿", "Motivating Vibe 🔥", "Spacious 🏢", "Great Music 🎵"] },
-  pets: { label: "Pet Grooming & Vet", suggestions: ["Handled with Care 🐕", "Loving Staff 🐾", "Expert Vet 🩺", "Clean Facility 🛁", "My Pet is Happy 🐈", "Stress-free Visit ❤️"] },
-  tech_repair: { label: "Mobile & Laptop Repair", suggestions: ["Fast Repair ⚡", "Data Saved 💾", "Affordable Price 💰", "Original Parts 📱", "Honest Service 🤝", "Expert Technician 👨‍💻"] },
-  retail: { label: "Premium Retail Shop", suggestions: ["Huge Variety 🛍️", "Latest Designs ✨", "Helpful Owner 🤝", "Authentic Products 💎", "Great Discounts 🏷️", "Beautiful Packaging 🎁"] },
-  print_shop: { label: "Print Shop & Cyber Cafe", suggestions: ["High Quality Print 🖨️", "Fast Internet 🌐", "Cooperative Staff 👨‍💼", "Cheap Rates 📄", "No Waiting Line ⏱️", "All Services ✅"] }
+  cafe: {
+    label: "Cafe & Restaurant",
+    suggestions: [
+      { text: "Great Coffee ☕", type: "positive" },
+      { text: "Amazing Vibe ✨", type: "positive" },
+      { text: "Delicious Food 🍔", type: "positive" },
+      { text: "Friendly Staff 👥", type: "positive" },
+      { text: "Fast Service ⚡", type: "positive" },
+      { text: "Slow Service ⏳", type: "negative" }, // Negative
+      { text: "Food was cold 🥶", type: "negative" }  // Negative
+    ]
+  },
+  salon: {
+    label: "Salon & Spa",
+    suggestions: [
+      { text: "Relaxing Massage 💆‍♀️", type: "positive" },
+      { text: "Awesome Haircut ✂️", type: "positive" },
+      { text: "Clean & Hygienic 🧼", type: "positive" },
+      { text: "Professional Staff 👔", type: "positive" },
+      { text: "Long Wait Time ⏱️", type: "negative" }, // Negative
+      { text: "Unprofessional 😒", type: "negative" }  // Negative
+    ]
+  },
+  hotel: {
+    label: "Hotel & Resort",
+    suggestions: [
+      { text: "Comfortable Beds 🛏️", type: "positive" },
+      { text: "Clean Rooms 🧹", type: "positive" },
+      { text: "Great View 🌅", type: "positive" },
+      { text: "Polite Staff 🛎️", type: "positive" },
+      { text: "Dirty Washroom 🤢", type: "negative" }, // Negative
+      { text: "Noisy Rooms 🔊", type: "negative" }    // Negative
+    ]
+  }
+  // Baki categories bhi aise hi add kar lena...
 };
