@@ -227,12 +227,6 @@ const LandingPage = () => {
                   <CheckCircle className="w-5 h-5 text-[#34A853] mt-0.5 shrink-0" />
                   <span className="font-bold text-gray-900">ZERO Setup Fee for QR Stands</span>
                 </li>
-                <li className="flex items-start gap-2 bg-yellow-50 p-3 rounded-md border border-yellow-100 mt-4">
-                  <Star className="w-5 h-5 text-[#FBBC05] mt-0.5 shrink-0" />
-                  <span className="text-gray-800">
-                    <b>Flexible Payment:</b> Pay ₹1500 advance to start. Pay remaining after 3 months.
-                  </span>
-                </li>
               </ul>
               
               <button 
