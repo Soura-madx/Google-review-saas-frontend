@@ -13,7 +13,7 @@
     "@tailwindcss/vite": "^4.3.5",
     "autoprefixer": "^10.6.2",
     "axios": "^1.21.0",
-    "lucide-react": "^1.70.0",
+    "lucide-react": "^1.73.0",
     "postcss": "^8.5.32",
     "qrcode.react": "^4.2.0",
     "react": "^19.3.1",
