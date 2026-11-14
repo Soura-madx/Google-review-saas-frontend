@@ -10,19 +10,20 @@ export default function ReviewPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [pageError, setPageError] = useState('');
 
-  // The Magic State: Defines which UI to show
-  const [uiMode, setUiMode] = useState('initial'); // 'initial', 'positive_ai', 'negative_trap', 'fake_success'
+  // 🌟 THE NEW FLOW STATE
+  // 'tag_selection' -> 'positive_ai' OR 'negative_trap' -> 'fake_success'
+  const [uiMode, setUiMode] = useState('tag_selection'); 
 
-  // Shared States
-  const [overallRating, setOverallRating] = useState(0);
+  // Selected Tags State (Storing whole object to check type)
+  const [selectedTags, setSelectedTags] = useState([]);
 
   // Positive Flow States (Starify UI)
-  const [selectedTags, setSelectedTags] = useState([]);
   const [generatedReview, setGeneratedReview] = useState('');
   const [isAiWriting, setIsAiWriting] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
   // Negative Flow States (Fake Google UI)
+  const [overallRating, setOverallRating] = useState(0);
   const [subRatings, setSubRatings] = useState({});
   const [detailedAnswers, setDetailedAnswers] = useState({});
   const [feedbackText, setFeedbackText] = useState("");
@@ -43,36 +44,48 @@ export default function ReviewPage() {
     if (businessId) fetchBusiness();
   }, [businessId]);
 
-  // --- TRAPDOOR LOGIC ---
-  const handleRatingClick = (star) => {
-    setOverallRating(star);
-    if (star >= 4) {
-      setUiMode('positive_ai'); // Happy customer -> Show AI Tags
+
+  // --- 🌟 NEW LOGIC: TAG SELECTION & SMART ROUTING ---
+  const handleTagSelect = (tagObj) => {
+    // Check if tag is already selected
+    if (selectedTags.some(t => t.text === tagObj.text)) {
+      setSelectedTags(selectedTags.filter(t => t.text !== tagObj.text));
     } else {
-      setUiMode('negative_trap'); // Angry customer -> Open Fake Google UI
+      setSelectedTags([...selectedTags, tagObj]);
     }
   };
+
+  const handleContinue = () => {
+    if (selectedTags.length === 0) return alert("Please select at least one option!");
+
+    // Check if ANY of the selected tags is negative
+    const hasNegative = selectedTags.some(tag => tag.type === 'negative');
+
+    if (hasNegative) {
+      // 🔴 TRAPDOOR: Open Fake Google UI
+      setUiMode('negative_trap');
+    } else {
+      // 🟢 HAPPY FLOW: Generate AI Review
+      setUiMode('positive_ai');
+      generateAIReview();
+    }
+  };
+
 
   // --- POSITIVE FLOW FUNCTIONS (Real Google Maps) ---
-  const handleTagSelect = (tagText) => {
-    if (selectedTags.includes(tagText)) {
-      setSelectedTags(selectedTags.filter(t => t !== tagText));
-    } else {
-      setSelectedTags([...selectedTags, tagText]);
-    }
-  };
-
   const generateAIReview = async () => {
-    if (selectedTags.length === 0) return alert("Please select at least one tag!");
     setIsAiWriting(true);
     setGeneratedReview("✨ Starify AI is writing your perfect review...");
 
     try {
+      // Extract just the text from selected tag objects
+      const tagsToSend = selectedTags.map(t => t.text);
+      
       const res = await axios.post('https://google-review-saas-backend.onrender.com/api/reviews/generate', {
         businessName: business.businessName || business.cafeName,
         category: business.businessCategory || 'cafe',
-        tags: selectedTags,
-        rating: overallRating
+        tags: tagsToSend,
+        rating: 5 // Default to 5 stars since it's purely positive
       });
       setGeneratedReview(res.data.reviewText);
     } catch (error) {
@@ -90,15 +103,15 @@ export default function ReviewPage() {
     }, 1500);
   };
 
+
   // --- NEGATIVE FLOW FUNCTIONS (Fake Google UI -> Owner Dashboard) ---
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // ⚠️ TODO: Update with your Cloudinary details
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', 'YOUR_UPLOAD_PRESET'); 
+    formData.append('upload_preset', 'YOUR_UPLOAD_PRESET'); // Update Cloudinary preset
 
     try {
       const res = await axios.post(`https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload`, formData);
@@ -109,7 +122,9 @@ export default function ReviewPage() {
   };
 
   const handlePostToDashboard = async () => {
+    if (overallRating === 0) return alert("Please select a star rating first.");
     setIsProcessing(true);
+    
     try {
       await axios.post('https://google-review-saas-backend.onrender.com/api/feedback/internal', {
         businessId: business._id,
@@ -117,15 +132,17 @@ export default function ReviewPage() {
         subRatings,
         detailedAnswers,
         text: feedbackText,
-        photos: uploadedPhotos
+        photos: uploadedPhotos,
+        initialTags: selectedTags.map(t => t.text) // Tell owner what triggered this
       });
       setIsProcessing(false);
-      setUiMode('fake_success'); // Done! Show Google's success screen
+      setUiMode('fake_success');
     } catch (error) {
       setIsProcessing(false);
-      setUiMode('fake_success'); // Show success anyway to calm the customer
+      setUiMode('fake_success');
     }
   };
+
 
   if (isLoading) return <div className="min-h-screen bg-gray-950 flex items-center justify-center text-blue-400">Loading...</div>;
   if (pageError) return <div className="min-h-screen bg-gray-950 flex items-center justify-center text-red-400">{pageError}</div>;
@@ -133,97 +150,98 @@ export default function ReviewPage() {
   const currentCategoryData = businessCategories[business.businessCategory || 'cafe'];
   const displayName = business.businessName || business.cafeName;
 
-  // Filter only positive tags for the Happy Flow
-  const positiveTags = currentCategoryData.suggestions?.filter(s => s.type === 'positive') || [];
-
   return (
     <>
       {/* ========================================= */}
-      {/* UI MODE 1: INITIAL & POSITIVE (Starify UI) */}
+      {/* UI MODE 1: INITIAL TAG SELECTION (No Stars) */}
       {/* ========================================= */}
-      {(uiMode === 'initial' || uiMode === 'positive_ai') && (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans">
-          <div className="bg-white max-w-md w-full rounded-[2rem] p-6 shadow-xl border border-gray-100 transition-all duration-500">
+      {uiMode === 'tag_selection' && (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans animate-fade-in">
+          <div className="bg-white max-w-md w-full rounded-[2rem] p-6 sm:p-8 shadow-xl border border-gray-100">
             
             <div className="text-center mb-8">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-blue-600">{displayName.charAt(0)}</span>
               </div>
               <h1 className="text-2xl font-bold text-gray-900">{displayName}</h1>
-              <p className="text-gray-500 text-sm">Rate your experience</p>
+              <p className="text-gray-500 mt-2 font-medium">How was your visit?</p>
             </div>
 
-            {/* Always Show Stars in Positive Flow */}
-            <div className="mb-6 text-center">
-              <div className="flex justify-center gap-2">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star 
-                    key={star} 
-                    onClick={() => handleRatingClick(star)}
-                    className={`w-12 h-12 cursor-pointer transition-all ${
-                      overallRating >= star ? 'text-yellow-400 fill-yellow-400 scale-110 drop-shadow-md' : 'text-gray-200 fill-gray-100 hover:text-yellow-200'
-                    }`} 
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Show Tags ONLY if rated 4 or 5 */}
-            {uiMode === 'positive_ai' && (
-              <div className="animate-fade-in">
-                <p className="text-sm font-bold text-gray-800 mb-3 text-center">What did you like?</p>
-                <div className="flex flex-wrap justify-center gap-2 mb-6">
-                  {positiveTags.map((tagObj, index) => (
-                    <button 
-                      key={index}
-                      onClick={() => handleTagSelect(tagObj.text)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                        selectedTags.includes(tagObj.text) 
-                        ? 'bg-blue-600 text-white shadow-md scale-105' 
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {tagObj.text}
-                    </button>
-                  ))}
-                </div>
-
-                {!generatedReview ? (
+            <div className="flex flex-wrap justify-center gap-3 mb-8">
+              {currentCategoryData.suggestions?.map((tagObj, index) => {
+                const isSelected = selectedTags.some(t => t.text === tagObj.text);
+                return (
                   <button 
-                    onClick={generateAIReview}
-                    disabled={selectedTags.length === 0 || isAiWriting}
-                    className={`w-full py-4 rounded-xl font-bold text-white flex justify-center items-center gap-2 transition-all ${
-                      selectedTags.length > 0 ? 'bg-blue-600 hover:bg-blue-700 shadow-lg' : 'bg-gray-300 cursor-not-allowed'
+                    key={index}
+                    onClick={() => handleTagSelect(tagObj)}
+                    className={`px-5 py-3 rounded-full text-sm font-medium transition-all duration-300 ${
+                      isSelected 
+                      ? 'bg-blue-600 text-white shadow-md scale-105 border-transparent' 
+                      : 'bg-white text-gray-700 border border-gray-200 hover:border-blue-400 hover:bg-blue-50'
                     }`}
                   >
-                    <Sparkles className="w-5 h-5" /> 
-                    {isAiWriting ? 'Writing Magic Review...' : 'Write Review with AI'}
+                    {tagObj.text}
                   </button>
-                ) : (
-                  <div className="animate-fade-in mt-4">
-                    <textarea 
-                      value={generatedReview} 
-                      onChange={(e) => setGeneratedReview(e.target.value)}
-                      className="w-full bg-blue-50 border border-blue-100 rounded-xl p-4 text-gray-800 h-32 focus:ring-2 focus:ring-blue-500 outline-none mb-4" 
-                    />
-                    <button 
-                      onClick={handlePostToRealGoogle}
-                      className="w-full bg-green-500 text-white font-bold py-4 rounded-xl hover:bg-green-600 flex justify-center gap-2 shadow-lg"
-                    >
-                      {isCopied ? <CheckCircle /> : <Send />} 
-                      {isCopied ? 'Copied! Redirecting to Google...' : 'Copy & Post on Google'}
-                    </button>
-                    <p className="text-xs text-gray-400 text-center mt-2">*Paste on the next screen</p>
-                  </div>
-                )}
+                )
+              })}
+            </div>
+
+            <button 
+              onClick={handleContinue}
+              disabled={selectedTags.length === 0}
+              className={`w-full py-4 rounded-xl font-bold text-white flex justify-center items-center gap-2 transition-all ${
+                selectedTags.length > 0 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:-translate-y-1 shadow-lg' : 'bg-gray-300 cursor-not-allowed'
+              }`}
+            >
+              Continue ➔
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================= */}
+      {/* UI MODE 2: POSITIVE FLOW (AI Text & Google) */}
+      {/* ========================================= */}
+      {uiMode === 'positive_ai' && (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans animate-fade-in">
+          <div className="bg-white max-w-md w-full rounded-[2rem] p-6 sm:p-8 shadow-xl border border-gray-100">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="text-green-500 w-8 h-8" />
               </div>
+              <h2 className="text-xl font-bold text-gray-900">We wrote a review for you!</h2>
+              <p className="text-sm text-gray-500 mt-1">Based on what you liked</p>
+            </div>
+
+            {isAiWriting ? (
+              <div className="h-32 flex items-center justify-center text-blue-500 font-medium animate-pulse">
+                Writing Magic Review... ✨
+              </div>
+            ) : (
+              <>
+                <textarea 
+                  value={generatedReview} 
+                  onChange={(e) => setGeneratedReview(e.target.value)}
+                  className="w-full bg-blue-50 border border-blue-100 rounded-xl p-4 text-gray-800 h-32 focus:ring-2 focus:ring-blue-500 outline-none mb-6 leading-relaxed" 
+                />
+                <button 
+                  onClick={handlePostToRealGoogle}
+                  className="w-full bg-[#34A853] text-white font-bold py-4 rounded-xl hover:bg-green-600 flex justify-center items-center gap-2 shadow-lg transition-transform hover:-translate-y-1"
+                >
+                  {isCopied ? <CheckCircle /> : <Send />} 
+                  {isCopied ? 'Copied! Redirecting to Google...' : 'Copy & Post on Google'}
+                </button>
+                <p className="text-xs text-gray-400 text-center mt-4">
+                  *Just paste this on the next screen
+                </p>
+              </>
             )}
           </div>
         </div>
       )}
 
       {/* ========================================= */}
-      {/* UI MODE 2: NEGATIVE TRAP (Fake Google UI) */}
+      {/* UI MODE 3: NEGATIVE TRAP (Fake Google Maps) */}
       {/* ========================================= */}
       {uiMode === 'negative_trap' && (
         <div className="min-h-screen bg-[#202124] text-gray-200 p-4 sm:p-6 font-sans">
@@ -240,6 +258,7 @@ export default function ReviewPage() {
               </div>
             </div>
 
+            {/* Force them to rate first */}
             <div className="flex justify-center gap-2 mb-8">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star key={star} onClick={() => setOverallRating(star)}
@@ -247,7 +266,6 @@ export default function ReviewPage() {
               ))}
             </div>
 
-            {/* Sub Ratings */}
             {currentCategoryData.ratingCategories?.map((cat) => (
               <div key={cat} className="flex justify-between items-center mb-5">
                 <span className="text-[15px]">{cat}</span>
@@ -266,7 +284,6 @@ export default function ReviewPage() {
               className="w-full bg-transparent border border-gray-600 rounded-xl p-4 text-[15px] min-h-[120px] focus:outline-none focus:border-blue-400 mt-4 mb-4"
             />
 
-            {/* Cloudinary */}
             <label className="border border-gray-600 rounded-full py-2 px-4 flex items-center justify-center gap-2 text-blue-400 text-[14px] cursor-pointer hover:bg-[#303134] w-full">
               <Camera className="w-5 h-5" /> Add photos and videos
               <input type="file" className="hidden" accept="image/*,video/*" onChange={handlePhotoUpload} />
@@ -280,7 +297,6 @@ export default function ReviewPage() {
               </div>
             )}
 
-            {/* Detailed Google Questions */}
             <div className="mt-8 space-y-6 pb-20">
               {currentCategoryData.detailedQuestions?.map((q) => (
                 <div key={q.id} className="bg-[#303134] p-5 rounded-2xl">
@@ -295,7 +311,6 @@ export default function ReviewPage() {
               ))}
             </div>
 
-            {/* Fake Google Action Bar */}
             <div className="fixed bottom-0 left-0 w-full bg-[#202124] border-t border-gray-700 p-3 flex justify-end gap-4">
               <button className="text-[#8AB4F8] text-[14px] font-medium px-4 py-2">Cancel</button>
               <button onClick={handlePostToDashboard} disabled={isProcessing} className="px-6 py-2 rounded-full text-[14px] font-medium bg-[#8AB4F8] text-[#202124]">{isProcessing ? 'Posting...' : 'Post'}</button>
@@ -305,7 +320,7 @@ export default function ReviewPage() {
       )}
 
       {/* ========================================= */}
-      {/* UI MODE 3: FAKE SUCCESS SCREEN (Trap End) */}
+      {/* UI MODE 4: FAKE SUCCESS (End of Trapdoor) */}
       {/* ========================================= */}
       {uiMode === 'fake_success' && (
         <div className="min-h-screen bg-[#202124] text-white flex flex-col items-center justify-center p-4 animate-fade-in">
