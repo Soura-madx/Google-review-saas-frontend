@@ -151,7 +151,7 @@ export default function ReviewPage() {
     setTimeout(() => window.location.href = business.googleReviewLink, 1500);
   };
 
-  if (isLoading) return <div className="min-h-screen bg-[#202124] text-white flex justify-center items-center">Loading...</div>;
+  if (isLoading) return <div className="min-h-screen bg-white text-gray-800 flex justify-center items-center">Loading...</div>;
 
   const currentData = businessCategories[business?.businessCategory || 'cafe'];
   const displayName = business?.businessName || business?.cafeName || "Business";
@@ -175,14 +175,14 @@ export default function ReviewPage() {
                 return (
                   <button key={idx} onClick={() => handleTagSelect(tagObj)}
                     className={`px-5 py-3 rounded-full text-sm font-medium transition-all duration-300 ${
-                      isSelected ? 'bg-blue-600 text-white shadow-md scale-105 border-transparent' : 'bg-white text-gray-700 border border-gray-200 hover:border-blue-400'
+                      isSelected ? 'bg-[#006a60] text-white shadow-md scale-105 border-transparent' : 'bg-white text-gray-700 border border-gray-300 hover:border-[#006a60]'
                     }`}>{tagObj.text}</button>
                 )
               })}
             </div>
             <button onClick={handleContinue} disabled={selectedTags.length === 0}
               className={`w-full py-4 rounded-xl font-bold text-white flex justify-center items-center gap-2 transition-all ${
-                selectedTags.length > 0 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg' : 'bg-gray-300 cursor-not-allowed'
+                selectedTags.length > 0 ? 'bg-[#006a60] shadow-lg hover:opacity-90' : 'bg-gray-300 cursor-not-allowed'
               }`}>Continue ➔</button>
           </div>
         </div>
@@ -193,19 +193,19 @@ export default function ReviewPage() {
          <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans animate-fade-in">
           <div className="bg-white max-w-md w-full rounded-[2rem] p-6 sm:p-8 shadow-xl border border-gray-100">
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="text-green-500 w-8 h-8" />
+              <div className="w-16 h-16 bg-[#e4f2f2] rounded-full flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="text-[#006a60] w-8 h-8" />
               </div>
               <h2 className="text-xl font-bold text-gray-900">We wrote a review for you!</h2>
             </div>
             {isAiWriting ? (
-              <div className="h-32 flex items-center justify-center text-blue-500 font-medium animate-pulse">Writing Magic Review... ✨</div>
+              <div className="h-32 flex items-center justify-center text-[#006a60] font-medium animate-pulse">Writing Magic Review... ✨</div>
             ) : (
               <>
                 <textarea value={generatedReview} onChange={(e) => setGeneratedReview(e.target.value)}
-                  className="w-full bg-blue-50 border border-blue-100 rounded-xl p-4 text-gray-800 h-32 outline-none mb-6 leading-relaxed" />
+                  className="w-full bg-[#f0f4f9] border border-gray-200 rounded-xl p-4 text-gray-800 h-32 outline-none mb-6 leading-relaxed focus:border-[#006a60]" />
                 <button onClick={handlePostToRealGoogle}
-                  className="w-full bg-[#34A853] text-white font-bold py-4 rounded-xl hover:bg-green-600 flex justify-center items-center gap-2 shadow-lg">
+                  className="w-full bg-[#006a60] text-white font-bold py-4 rounded-xl hover:opacity-90 flex justify-center items-center gap-2 shadow-lg">
                   {isCopied ? <CheckCircle /> : <Send />} {isCopied ? 'Copied! Redirecting to Google...' : 'Copy & Post on Google'}
                 </button>
               </>
@@ -214,85 +214,99 @@ export default function ReviewPage() {
         </div>
       )}
 
-      {/* 3. EXACT GOOGLE MOBILE UI (NEGATIVE TRAP) */}
+      {/* 3. EXACT GOOGLE MOBILE LIGHT UI (NEGATIVE TRAP) */}
       {uiMode === 'negative_trap' && (
-        <div className="min-h-screen bg-[#202124] text-gray-200 p-4 font-sans flex justify-center relative">
-          <div className="max-w-md w-full mb-20 overflow-hidden relative">
+        <div className="min-h-screen bg-white text-[#1f1f1f] p-4 font-sans flex justify-center relative">
+          <div className="max-w-md w-full mb-24 overflow-hidden relative">
             
-            {/* 🌟 NAYA: Header (Left Aligned for Mobile) */}
-            <div className="flex items-center pt-2 pb-4">
-              <h1 className="text-lg font-medium text-white flex-1 text-left">{displayName}</h1>
-              <X className="w-6 h-6 text-gray-300 cursor-pointer" onClick={() => window.location.reload()} />
+            {/* Header */}
+            <div className="flex justify-between items-center pt-2 pb-4">
+              <h1 className="text-2xl font-normal text-[#1f1f1f] flex-1 text-left">{displayName}</h1>
+              <button className="bg-[#f1f3f4] p-2 rounded-full cursor-pointer hover:bg-gray-200" onClick={() => window.location.reload()}>
+                <X className="w-5 h-5 text-[#5f6368]" />
+              </button>
             </div>
 
-            <div className="py-4">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-10 h-10 bg-[#E8710A] rounded-full flex items-center justify-center font-bold text-white text-lg">G</div>
+            <div className="py-2">
+              {/* Profile Bar */}
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-[#188038] rounded-full flex items-center justify-center font-normal text-white text-lg uppercase">S</div>
                 <div>
-                  <p className="font-medium text-[15px] text-white">Google User</p>
-                  <p className="text-[13px] text-gray-400 flex items-center gap-1">Posting publicly across Google <Info className="w-3.5 h-3.5" /></p>
+                  <p className="font-medium text-[14px] text-[#1f1f1f] uppercase tracking-tight">Sourabh Kori</p>
+                  <p className="text-[12px] text-[#5f6368] flex items-center gap-1">Posting publicly across Google <Info className="w-3.5 h-3.5" /></p>
                 </div>
               </div>
 
               {/* Main Stars */}
               <div className="text-center mb-6">
-                <div className="flex justify-center gap-1">
+                <div className="flex justify-center gap-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star key={star} onClick={() => setOverallRating(star)}
-                      className={`w-10 h-10 cursor-pointer ${overallRating >= star ? 'text-[#FBBC04] fill-[#FBBC04]' : 'text-[#80868b]'}`} />
+                      className={`w-11 h-11 cursor-pointer transition-colors ${
+                        overallRating >= star 
+                        ? 'text-[#FBBC04] fill-[#FBBC04]' 
+                        : 'text-[#70757a] fill-transparent'
+                      }`} 
+                    />
                   ))}
                 </div>
-                {/* 🌟 NAYA: Star label text color is now white */}
-                {overallRating > 0 && <p className="text-white text-[14px] mt-2 font-medium">{getStarLabel(overallRating)}</p>}
+                {overallRating > 0 && <p className="text-[#3c4043] text-[14px] mt-2 font-medium">{getStarLabel(overallRating)}</p>}
               </div>
 
               {/* Sub Ratings */}
-              {currentData.ratingCategories?.map((cat) => (
-                <div key={cat} className="flex justify-between items-center mb-4">
-                  <span className="text-[15px] text-white">{cat}</span>
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star key={star} onClick={() => setSubRatings({ ...subRatings, [cat]: star })}
-                        className={`w-7 h-7 cursor-pointer ${subRatings[cat] >= star ? 'text-[#FBBC04] fill-[#FBBC04]' : 'text-[#80868b]'}`} />
-                    ))}
+              <div className="mb-6 space-y-3">
+                {currentData.ratingCategories?.map((cat) => (
+                  <div key={cat} className="flex justify-between items-center">
+                    <span className="text-[14px] text-[#3c4043]">{cat}</span>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star key={star} onClick={() => setSubRatings({ ...subRatings, [cat]: star })}
+                          className={`w-7 h-7 cursor-pointer ${
+                            (subRatings[cat] || 0) >= star 
+                            ? 'text-[#FBBC04] fill-[#FBBC04]' 
+                            : 'text-[#70757a] fill-transparent'
+                          }`} 
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
 
+              {/* Text Area */}
               <textarea 
                 value={feedbackText} onChange={(e) => setFeedbackText(e.target.value)}
-                placeholder="Share details of your own experience at this place"
-                className="w-full bg-transparent border border-[#5f6368] rounded-md p-3 text-[14px] min-h-[100px] focus:outline-none focus:border-[#8AB4F8] mt-4 mb-6 text-white"
+                placeholder="Tell others about your experience"
+                className="w-full bg-white border border-[#dadce0] rounded-xl p-4 text-[14px] min-h-[120px] focus:outline-none focus:border-[#006a60] mb-6 text-[#1f1f1f] placeholder-[#70757a]"
               />
 
-              {/* 🌟 NAYA: Full Width Photo Button (White Bg, Black Text) */}
-              <label className="w-full bg-[#f1f3f4] text-[#202124] border-0 rounded-full py-3 px-4 flex items-center justify-center gap-2 text-[15px] font-medium cursor-pointer mb-6 shadow-sm">
-                <Camera className="w-5 h-5 text-[#202124]" /> Add photos and videos
+              {/* Photo Button - Cyan Light Bg, Dark Blue/Teal Text */}
+              <label className="w-full bg-[#C2E7FF] text-[#001D35] border-0 rounded-full py-3 px-4 flex items-center justify-center gap-2 text-[15px] font-medium cursor-pointer mb-6 hover:bg-[#a8d3f3] transition-colors">
+                <Camera className="w-5 h-5 text-[#001D35]" /> Add photos and videos
                 <input type="file" className="hidden" accept="image/*,video/*" onChange={handlePhotoUpload} />
               </label>
 
               {uploadedPhotos.length > 0 && (
                 <div className="flex gap-3 mb-6 flex-wrap">
                   {uploadedPhotos.map((url, i) => (
-                    <div key={i} className="relative"><img src={url} className="w-16 h-16 object-cover rounded-lg border border-gray-600" /><button onClick={() => setUploadedPhotos(uploadedPhotos.filter((_, idx) => idx !== i))} className="absolute -top-2 -right-2 bg-gray-800 rounded-full p-1"><X className="w-3 h-3 text-gray-300" /></button></div>
+                    <div key={i} className="relative"><img src={url} className="w-16 h-16 object-cover rounded-lg border border-gray-200" /><button onClick={() => setUploadedPhotos(uploadedPhotos.filter((_, idx) => idx !== i))} className="absolute -top-2 -right-2 bg-gray-100 rounded-full p-1 shadow-sm"><X className="w-3 h-3 text-gray-700" /></button></div>
                   ))}
                 </div>
               )}
 
-              {/* DIRECT QUESTIONS */}
-              <div className="space-y-6 mb-8">
+              {/* DIRECT QUESTIONS (Cards) */}
+              <div className="space-y-4 mb-8">
                 {currentData.directQuestions?.map((q) => (
-                  <div key={q.id}>
-                    <p className="text-[15px] text-white font-medium mb-1">{q.question}</p>
-                    {q.subtext && <p className="text-[13px] text-gray-400 mb-3">{q.subtext}</p>}
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {/* 🌟 NAYA: Options with White BG, Black Text, No Border */}
+                  <div key={q.id} className="bg-[#F0F4F9] p-5 rounded-2xl">
+                    <p className="text-[15px] text-[#1f1f1f] font-medium mb-1">{q.question}</p>
+                    {q.subtext && <p className="text-[13px] text-[#5f6368] mb-3">{q.subtext}</p>}
+                    <div className="flex flex-wrap gap-2 mt-3">
                       {q.options.map((opt) => {
                         const isSelected = q.multiSelect ? detailedAnswers[q.id]?.includes(opt) : detailedAnswers[q.id] === opt;
                         return (
                           <button key={opt} onClick={() => handleDetailedAnswer(q.id, opt, q.multiSelect)}
-                            className={`px-4 py-2 rounded-lg text-[14px] font-medium border-0 transition-colors ${
-                              isSelected ? 'bg-[#8AB4F8] text-[#202124]' : 'bg-white text-black'
+                            className={`px-4 py-2 rounded-lg text-[14px] font-medium border-0 transition-colors shadow-sm ${
+                              isSelected ? 'bg-[#D3E3FD] text-[#041E49]' : 'bg-white text-[#3c4043] hover:bg-gray-50'
                             }`}>
                             {opt}
                           </button>
@@ -303,34 +317,32 @@ export default function ReviewPage() {
                 ))}
               </div>
 
-              <h2 className="text-[16px] font-medium text-white mb-4 border-t border-gray-700 pt-6">Add more details to help others</h2>
+              <h2 className="text-[16px] font-medium text-[#1f1f1f] mb-4">Add more details to help others</h2>
               
-              {/* 🌟 NAYA: Accordion List */}
-              <div className="rounded-lg overflow-hidden border border-[#5f6368]">
+              {/* ACCORDION (Light Mode) */}
+              <div className="rounded-2xl overflow-hidden border border-[#dadce0]">
                 {currentData.accordionSections?.map((section, idx) => (
-                  <div key={section.id} className={idx !== 0 ? 'border-t border-[#5f6368]' : ''}>
+                  <div key={section.id} className={idx !== 0 ? 'border-t border-[#dadce0]' : ''}>
                     
                     <div onClick={() => setOpenDropdown(openDropdown === section.id ? null : section.id)}
-                      className="flex justify-between items-center p-4 cursor-pointer hover:bg-[#3c4043] transition-colors bg-transparent">
-                      <span className="text-[14px] text-white font-medium">{section.title}</span>
-                      <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${openDropdown === section.id ? 'rotate-180' : ''}`} />
+                      className="flex justify-between items-center p-4 cursor-pointer hover:bg-gray-50 transition-colors bg-white">
+                      <span className="text-[14px] text-[#1f1f1f] font-medium">{section.title}</span>
+                      <ChevronDown className={`w-5 h-5 text-[#5f6368] transition-transform ${openDropdown === section.id ? 'rotate-180' : ''}`} />
                     </div>
                     
                     {openDropdown === section.id && (
-                      // 🌟 NAYA: Accordion Content Background
-                      <div className="p-4 pt-0 bg-[#303134]">
+                      <div className="p-4 pt-0 bg-[#F0F4F9]">
                         {section.questions.map((q) => (
                           <div key={q.id} className="mb-6 mt-4">
-                            <p className="text-[15px] text-white font-medium mb-1">{q.question}</p>
-                            {q.subtext && <p className="text-[13px] text-gray-400 mb-2">{q.subtext}</p>}
+                            <p className="text-[15px] text-[#1f1f1f] font-medium mb-1">{q.question}</p>
+                            {q.subtext && <p className="text-[13px] text-[#5f6368] mb-2">{q.subtext}</p>}
                             <div className="flex flex-wrap gap-2">
-                              {/* 🌟 NAYA: Options with White BG, Black Text, No Border */}
                               {q.options.map((opt) => {
                                 const isSelected = q.multiSelect ? detailedAnswers[q.id]?.includes(opt) : detailedAnswers[q.id] === opt;
                                 return (
                                   <button key={opt} onClick={() => handleDetailedAnswer(q.id, opt, q.multiSelect)}
-                                    className={`px-4 py-2 rounded-lg text-[14px] font-medium border-0 transition-colors ${
-                                      isSelected ? 'bg-[#8AB4F8] text-[#202124]' : 'bg-white text-black'
+                                    className={`px-4 py-2 rounded-lg text-[14px] font-medium border-0 transition-colors shadow-sm ${
+                                      isSelected ? 'bg-[#D3E3FD] text-[#041E49]' : 'bg-white text-[#3c4043] hover:bg-gray-50'
                                     }`}>
                                     {opt}
                                   </button>
@@ -345,7 +357,7 @@ export default function ReviewPage() {
                                placeholder={section.textAreaPlaceholder}
                                value={dropdownTexts[section.id] || ""}
                                onChange={(e) => setDropdownTexts({ ...dropdownTexts, [section.id]: e.target.value })}
-                               className="w-full bg-transparent border border-[#5f6368] rounded-md p-3 text-[14px] min-h-[60px] focus:outline-none focus:border-[#8AB4F8] text-white placeholder-gray-400"
+                               className="w-full bg-white border border-[#dadce0] rounded-xl p-3 text-[14px] min-h-[60px] focus:outline-none focus:border-[#006a60] text-[#1f1f1f] placeholder-[#70757a]"
                              />
                            </div>
                         )}
@@ -356,10 +368,10 @@ export default function ReviewPage() {
               </div>
             </div>
             
-            {/* 🌟 NAYA: Only "Post" Button in Bottom Bar */}
-            <div className="fixed bottom-0 left-0 w-full bg-[#202124] border-t border-[#3c4043] p-3 px-4 flex justify-end z-50">
+            {/* BOTTOM POST BUTTON */}
+            <div className="fixed bottom-0 left-0 w-full bg-white p-3 px-4 flex justify-center z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
               <button onClick={handlePostToDashboard} disabled={isProcessing} 
-                className="px-6 py-2 rounded-full text-[14px] font-medium bg-[#1a73e8] text-white hover:bg-blue-600 transition-colors">
+                className="w-full py-3 rounded-full text-[15px] font-medium bg-[#006a60] text-white hover:opacity-90 transition-opacity">
                 {isProcessing ? 'Posting...' : 'Post'}
               </button>
             </div>
@@ -369,22 +381,21 @@ export default function ReviewPage() {
 
       {/* 4. POINTS SUCCESS MODAL */}
       {uiMode === 'fake_success' && (
-        <div className="min-h-screen bg-[#202124] bg-opacity-90 flex items-center justify-center p-4 fixed inset-0 z-50">
-          <div className="bg-[#2D2E30] rounded-xl p-8 w-full max-w-sm text-center shadow-2xl">
-            <div className="w-16 h-16 bg-[#E8710A] rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-white">G</div>
-            <h2 className="text-3xl font-normal text-white mb-1">+{earnedPoints.total} points</h2>
-            <p className="text-gray-400 text-[14px] mb-6">You've earned points for helping others</p>
+        <div className="min-h-screen bg-white flex items-center justify-center p-4 fixed inset-0 z-50">
+          <div className="bg-white rounded-3xl p-8 w-full max-w-sm text-center shadow-2xl border border-gray-100">
+            <div className="w-16 h-16 bg-[#F0F4F9] rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-blue-600">G</div>
+            <h2 className="text-3xl font-normal text-[#1f1f1f] mb-1">+{earnedPoints.total} points</h2>
+            <p className="text-[#5f6368] text-[14px] mb-6">You've earned points for helping others</p>
             
-            <div className="text-left mb-8">
-              {earnedPoints.ratings > 0 && <div className="flex justify-between py-2 text-[14px] border-b border-gray-700"><span className="text-gray-300">Ratings</span><span className="text-white">+{earnedPoints.ratings}</span></div>}
-              {earnedPoints.reviews > 0 && <div className="flex justify-between py-2 text-[14px] border-b border-gray-700"><span className="text-gray-300">Review</span><span className="text-white">+{earnedPoints.reviews}</span></div>}
-              {earnedPoints.photos > 0 && <div className="flex justify-between py-2 text-[14px] border-b border-gray-700"><span className="text-gray-300">Photos</span><span className="text-white">+{earnedPoints.photos}</span></div>}
-              {earnedPoints.answers > 0 && <div className="flex justify-between py-2 text-[14px]"><span className="text-gray-300">Answers</span><span className="text-white">+{earnedPoints.answers}</span></div>}
+            <div className="text-left mb-8 bg-[#F0F4F9] p-4 rounded-xl">
+              {earnedPoints.ratings > 0 && <div className="flex justify-between py-2 text-[14px] border-b border-gray-200"><span className="text-[#3c4043]">Ratings</span><span className="text-[#1f1f1f] font-medium">+{earnedPoints.ratings}</span></div>}
+              {earnedPoints.reviews > 0 && <div className="flex justify-between py-2 text-[14px] border-b border-gray-200"><span className="text-[#3c4043]">Review</span><span className="text-[#1f1f1f] font-medium">+{earnedPoints.reviews}</span></div>}
+              {earnedPoints.photos > 0 && <div className="flex justify-between py-2 text-[14px] border-b border-gray-200"><span className="text-[#3c4043]">Photos</span><span className="text-[#1f1f1f] font-medium">+{earnedPoints.photos}</span></div>}
+              {earnedPoints.answers > 0 && <div className="flex justify-between py-2 text-[14px]"><span className="text-[#3c4043]">Answers</span><span className="text-[#1f1f1f] font-medium">+{earnedPoints.answers}</span></div>}
             </div>
 
-            <div className="flex justify-end gap-2">
-              <button className="text-[#8AB4F8] px-4 py-2 font-medium">Contribute more</button>
-              <button onClick={() => window.location.reload()} className="bg-[#8AB4F8] text-[#202124] px-6 py-2 rounded-full font-medium">Done</button>
+            <div className="flex flex-col gap-3">
+              <button onClick={() => window.location.reload()} className="bg-[#0b57d0] text-white px-6 py-3 rounded-full font-medium w-full">Done</button>
             </div>
           </div>
         </div>
