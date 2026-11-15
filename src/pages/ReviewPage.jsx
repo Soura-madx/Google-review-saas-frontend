@@ -111,7 +111,7 @@ export default function ReviewPage() {
   const getStarLabel = (rating) => {
     switch(rating) {
       case 1: return "Far from great";
-      case 2: return "Not great";
+      case 2: return "not great";
       case 3: return "Good";
       case 4: return "Great";
       case 5: return "Exceptional";
@@ -232,7 +232,7 @@ export default function ReviewPage() {
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-[#188038] rounded-full flex items-center justify-center font-normal text-white text-lg uppercase">S</div>
                 <div>
-                  <p className="font-medium text-[14px] text-[#1f1f1f] uppercase tracking-tight">Sourabh Kori</p>
+                  <p className="font-medium text-[14px] text-[#1f1f1f] uppercase tracking-tight">Google User</p>
                   <p className="text-[12px] text-[#5f6368] flex items-center gap-1">Posting publicly across Google <Info className="w-3.5 h-3.5" /></p>
                 </div>
               </div>
@@ -331,36 +331,37 @@ export default function ReviewPage() {
                     </div>
                     
                     {openDropdown === section.id && (
-                      <div className="p-4 pt-0 bg-[#F0F4F9]">
-                        {section.questions.map((q) => (
-                          <div key={q.id} className="mb-6 mt-4">
-                            <p className="text-[15px] text-[#1f1f1f] font-medium mb-1">{q.question}</p>
-                            {q.subtext && <p className="text-[13px] text-[#5f6368] mb-2">{q.subtext}</p>}
-                            <div className="flex flex-wrap gap-2">
-                              {q.options.map((opt) => {
-                                const isSelected = q.multiSelect ? detailedAnswers[q.id]?.includes(opt) : detailedAnswers[q.id] === opt;
-                                return (
-                                  <button key={opt} onClick={() => handleDetailedAnswer(q.id, opt, q.multiSelect)}
-                                    className={`px-4 py-2 rounded-lg text-[14px] font-medium border-0 transition-colors shadow-sm ${
-                                      isSelected ? 'bg-[#D3E3FD] text-[#041E49]' : 'bg-white text-[#3c4043] hover:bg-gray-50'
-                                    }`}>
-                                    {opt}
-                                  </button>
-                                )
-                              })}
+                      // 🌟 FIX: Removed extra bottom margin from container and individual questions
+                      <div className="px-4 pb-4 bg-[#F0F4F9]">
+                        <div className="space-y-4 pt-4">
+                          {section.questions.map((q) => (
+                            <div key={q.id}>
+                              <p className="text-[15px] text-[#1f1f1f] font-medium mb-1">{q.question}</p>
+                              {q.subtext && <p className="text-[13px] text-[#5f6368] mb-2">{q.subtext}</p>}
+                              <div className="flex flex-wrap gap-2">
+                                {q.options.map((opt) => {
+                                  const isSelected = q.multiSelect ? detailedAnswers[q.id]?.includes(opt) : detailedAnswers[q.id] === opt;
+                                  return (
+                                    <button key={opt} onClick={() => handleDetailedAnswer(q.id, opt, q.multiSelect)}
+                                      className={`px-4 py-2 rounded-lg text-[14px] font-medium border-0 transition-colors shadow-sm ${
+                                        isSelected ? 'bg-[#D3E3FD] text-[#041E49]' : 'bg-white text-[#3c4043] hover:bg-gray-50'
+                                      }`}>
+                                      {opt}
+                                    </button>
+                                  )
+                                })}
+                              </div>
                             </div>
-                          </div>
-                        ))}
-                        {section.textAreaPlaceholder && (
-                           <div className="mt-4">
+                          ))}
+                          {section.textAreaPlaceholder && (
                              <textarea 
                                placeholder={section.textAreaPlaceholder}
                                value={dropdownTexts[section.id] || ""}
                                onChange={(e) => setDropdownTexts({ ...dropdownTexts, [section.id]: e.target.value })}
                                className="w-full bg-white border border-[#dadce0] rounded-xl p-3 text-[14px] min-h-[60px] focus:outline-none focus:border-[#006a60] text-[#1f1f1f] placeholder-[#70757a]"
                              />
-                           </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>

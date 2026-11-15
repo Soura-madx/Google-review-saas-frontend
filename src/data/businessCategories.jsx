@@ -6,8 +6,8 @@ export const businessCategories = {
       { text: "Amazing Vibe ✨", type: "positive" },
       { text: "Delicious Food 🍔", type: "positive" },
       { text: "Friendly Staff 👥", type: "positive" },
-      { text: "Slow Service ⏳", type: "negative" },
-      { text: "Food was cold 🥶", type: "negative" }
+      { text: "Bad Experience ⏳", type: "negative" },
+      
     ],
     ratingCategories: ["Food", "Service", "Atmosphere"],
     
