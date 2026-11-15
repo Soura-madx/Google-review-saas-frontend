@@ -4,8 +4,9 @@ export const businessCategories = {
     suggestions: [
       { text: "Great Coffee ☕", type: "positive" },
       { text: "Amazing Vibe ✨", type: "positive" },
-      { text: "Delicious Food 🍔", type: "positive" },
+      { text: "Delicious Food 👌", type: "positive" },
       { text: "Friendly Staff 👥", type: "positive" },
+      { text: "Best Experience 😃", type: "positive" },
       { text: "Bad Experience ⏳", type: "negative" },
       
     ],
