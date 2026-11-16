@@ -80,5 +80,76 @@ export const businessCategories = {
         textAreaPlaceholder: "Tell others about wheelchair accessibility"
       }
     ]
+  },
+  hotel: {
+    label: "Hotel, Resort & Airbnb",
+    suggestions: [
+      { text: "Comfortable Beds 🛏️", type: "positive" },
+      { text: "Clean Rooms 🧹", type: "positive" },
+      { text: "Great View 🌅", type: "positive" },
+      { text: "Polite Staff 🛎️", type: "positive" },
+      { text: "Tasty Breakfast 🍳", type: "positive" },
+      { text: "Dirty Washrooms 🤢", type: "negative" },
+      { text: "Noisy Rooms 🔊", type: "negative" },
+      { text: "Bad Room Service 📞", type: "negative" }
+    ],
+    // 🌟 Google Maps Hotels Rating System
+    ratingCategories: ["Rooms", "Service", "Location"],
+    
+    // 🌟 Direct Questions for Hotels
+    directQuestions: [
+      { 
+        id: "trip_type", 
+        question: "What type of trip was this?", 
+        multiSelect: false,
+        options: ["Holiday", "Business", "Couples", "Solo", "Family", "Friends"] 
+      }
+    ],
+
+    // 🌟 Detailed Accordions for Hotels
+    accordionSections: [
+      {
+        id: "rooms_details",
+        title: "Rooms",
+        questions: [
+          { 
+            id: "room_desc", 
+            question: "How would you describe the rooms?", 
+            subtext: "(Select all that apply)", 
+            multiSelect: true, 
+            options: ["Clean", "Spacious", "Quiet", "Updated", "Small", "Dated", "Noisy"] 
+          }
+        ],
+        textAreaPlaceholder: "Tell others about the rooms"
+      },
+      {
+        id: "food_drink",
+        title: "Food & drink",
+        questions: [
+          { 
+            id: "hotel_food", 
+            question: "How was the food?", 
+            subtext: "(Select all that apply)", 
+            multiSelect: true, 
+            options: ["Great breakfast", "Good room service", "Nice restaurant/bar", "Limited options"] 
+          }
+        ],
+        textAreaPlaceholder: "Tell others about the food and drinks"
+      },
+      {
+        id: "hotel_amenities",
+        title: "Amenities",
+        questions: [
+          { 
+            id: "amenities_desc", 
+            question: "What amenities did you use?", 
+            subtext: "(Select all that apply)", 
+            multiSelect: true, 
+            options: ["Swimming pool", "Gym/Fitness center", "Spa", "Free Wi-Fi", "Parking"] 
+          }
+        ],
+        textAreaPlaceholder: "Tell others about the hotel amenities"
+      }
+    ]
   }
 };
