@@ -103,30 +103,6 @@ export default function Dashboard() {
       {/* Main Grid Layout: grid-cols-1 mobile par strict width rakhega */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 w-full">
         
-        {/* QR Code Section - 🌟 FIX: w-full, min-w-0 aur overflow-hidden */}
-        <div className="w-full min-w-0 bg-gray-800/50 backdrop-blur-lg border border-gray-700 p-5 sm:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-xl overflow-hidden">
-          <h2 className="text-lg sm:text-xl font-semibold mb-1.5 text-white">Your Review QR Code</h2>
-          <p className="text-xs sm:text-sm text-gray-400 mb-5">Print this and place it on your tables.</p>
-
-          {/* QR Container - Mobile ke liye max-w-full */}
-          <div className="bg-white p-3 rounded-2xl shadow-[0_0_20px_rgba(255,255,255,0.1)] mb-6 flex items-center justify-center max-w-full">
-            <QRCodeCanvas
-              id="qr-gen"
-              value={customerLink.trim()}
-              size={165} // Mobile par perfect fit size
-              level={"H"}
-              includeMargin={true}
-              style={{ maxWidth: "100%", height: "auto" }}
-            />
-          </div>
-
-          <button
-            onClick={downloadQR}
-            className="bg-blue-600 hover:bg-blue-700 px-6 py-3.5 rounded-xl font-bold w-full transition-all text-white text-sm sm:text-base shadow-lg shadow-blue-500/20"
-          >
-            Download QR Code
-          </button>
-        </div>
 
         {/* Right Side Stack: min-w-0 zaroori hai grid overflow rokne ke liye */}
         <div className="w-full min-w-0 flex flex-col gap-6">
@@ -165,6 +141,35 @@ export default function Dashboard() {
           />
           
         </div>
+
+
+        
+        {/* QR Code Section - 🌟 FIX: w-full, min-w-0 aur overflow-hidden */}
+        <div className="w-full min-w-0 bg-gray-800/50 backdrop-blur-lg border border-gray-700 p-5 sm:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-xl overflow-hidden">
+          <h2 className="text-lg sm:text-xl font-semibold mb-1.5 text-white">Your Review QR Code</h2>
+          <p className="text-xs sm:text-sm text-gray-400 mb-5">Print this and place it on your tables.</p>
+
+          {/* QR Container - Mobile ke liye max-w-full */}
+          <div className="bg-white p-3 rounded-2xl shadow-[0_0_20px_rgba(255,255,255,0.1)] mb-6 flex items-center justify-center max-w-full">
+            <QRCodeCanvas
+              id="qr-gen"
+              value={customerLink.trim()}
+              size={165} // Mobile par perfect fit size
+              level={"H"}
+              includeMargin={true}
+              style={{ maxWidth: "100%", height: "auto" }}
+            />
+          </div>
+
+          <button
+            onClick={downloadQR}
+            className="bg-blue-600 hover:bg-blue-700 px-6 py-3.5 rounded-xl font-bold w-full transition-all text-white text-sm sm:text-base shadow-lg shadow-blue-500/20"
+          >
+            Download QR Code
+          </button>
+        </div>
+
+        
       </div>
 
       {/* Trapdoor Settings Toggle Card */}
