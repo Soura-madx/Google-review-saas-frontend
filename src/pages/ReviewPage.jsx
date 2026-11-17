@@ -17,6 +17,7 @@ export default function ReviewPage() {
   const [generatedReview, setGeneratedReview] = useState('');
   const [isAiWriting, setIsAiWriting] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [showPasteGuide, setShowPasteGuide] = useState(false); // 🌟 NAYA: Popup Guide State
 
   // NEGATIVE FLOW (FAKE UI)
   const [overallRating, setOverallRating] = useState(0);
@@ -111,7 +112,7 @@ export default function ReviewPage() {
   const getStarLabel = (rating) => {
     switch(rating) {
       case 1: return "Far from great";
-      case 2: return "not great";
+      case 2: return "Not great";
       case 3: return "Good";
       case 4: return "Great";
       case 5: return "Exceptional";
@@ -145,10 +146,27 @@ export default function ReviewPage() {
     }
   };
 
+  // 🌟 NAYA: Copy, Speak, and Redirect Logic
   const handlePostToRealGoogle = async () => {
+    // 1. Text Copy karo
     await navigator.clipboard.writeText(generatedReview);
     setIsCopied(true);
-    setTimeout(() => window.location.href = business.googleReviewLink, 1500);
+    setShowPasteGuide(true); // Popup dikhao
+
+    // 2. Hindi/English mixed Voice Message Play karo
+    if ('speechSynthesis' in window) {
+      const msg = new SpeechSynthesisUtterance();
+      msg.text = "Review copied! Please paste it in the box on the next screen.";
+      // Aksar Indian English set karne par jyada natural lagta hai
+      msg.lang = 'en-IN'; 
+      msg.rate = 1; // Normal speed
+      window.speechSynthesis.speak(msg);
+    }
+
+    // 3. 3.5 Seconds ke baad Google Maps par redirect karo (taaki aawaz poori sun le aur popup padh le)
+    setTimeout(() => {
+      window.location.href = business.googleReviewLink;
+    }, 3500); 
   };
 
   if (isLoading) return <div className="min-h-screen bg-white text-gray-800 flex justify-center items-center">Loading...</div>;
@@ -190,36 +208,64 @@ export default function ReviewPage() {
 
       {/* 2. POSITIVE AI SCREEN */}
       {uiMode === 'positive_ai' && (
-         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans animate-fade-in">
-          <div className="bg-white max-w-md w-full rounded-[2rem] p-6 sm:p-8 shadow-xl border border-gray-100">
+         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans animate-fade-in relative">
+          
+          <div className="bg-white max-w-md w-full rounded-[2rem] p-6 sm:p-8 shadow-xl border border-gray-100 relative z-10">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-[#e4f2f2] rounded-full flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="text-[#006a60] w-8 h-8" />
               </div>
               <h2 className="text-xl font-bold text-gray-900">We wrote a review for you!</h2>
             </div>
+            
             {isAiWriting ? (
               <div className="h-32 flex items-center justify-center text-[#006a60] font-medium animate-pulse">Writing Magic Review... ✨</div>
             ) : (
               <>
                 <textarea value={generatedReview} onChange={(e) => setGeneratedReview(e.target.value)}
                   className="w-full bg-[#f0f4f9] border border-gray-200 rounded-xl p-4 text-gray-800 h-32 outline-none mb-6 leading-relaxed focus:border-[#006a60]" />
-                <button onClick={handlePostToRealGoogle}
-                  className="w-full bg-[#006a60] text-white font-bold py-4 rounded-xl hover:opacity-90 flex justify-center items-center gap-2 shadow-lg">
-                  {isCopied ? <CheckCircle /> : <Send />} {isCopied ? 'Copied! Redirecting to Google...' : 'Copy & Post on Google'}
+                
+                <button 
+                  onClick={handlePostToRealGoogle}
+                  disabled={isCopied} // Prevent multiple clicks
+                  className={`w-full text-white font-bold py-4 rounded-xl flex justify-center items-center gap-2 shadow-lg transition-all ${isCopied ? 'bg-gray-400 cursor-wait' : 'bg-[#006a60] hover:opacity-90'}`}>
+                  {isCopied ? <CheckCircle className="animate-bounce" /> : <Send />} 
+                  {isCopied ? 'Copied! Opening Google...' : 'Copy & Post on Google'}
                 </button>
               </>
             )}
           </div>
+
+          {/* 🌟 NAYA: Guide Overlay Popup */}
+          {showPasteGuide && (
+            <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center p-4 animate-fade-in">
+               <div className="bg-white rounded-3xl p-8 max-w-sm text-center shadow-2xl animate-slide-up">
+                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <CheckCircle className="w-10 h-10 text-green-600" />
+                 </div>
+                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Review Copied!</h2>
+                 <div className="bg-gray-100 p-4 rounded-xl text-left border border-gray-200">
+                    <p className="text-gray-700 font-medium mb-2">Next Steps on Google:</p>
+                    <ol className="list-decimal pl-4 space-y-2 text-sm text-gray-600">
+                      <li>Tap 5 Stars ⭐</li>
+                      <li><strong>Long Press</strong> on the empty box 👆</li>
+                      <li>Select <strong>"Paste"</strong> 📋</li>
+                      <li>Tap Post! 🚀</li>
+                    </ol>
+                 </div>
+                 <p className="text-gray-400 text-xs mt-6 animate-pulse">Redirecting you to Google...</p>
+               </div>
+            </div>
+          )}
+
         </div>
       )}
 
       {/* 3. EXACT GOOGLE MOBILE LIGHT UI (NEGATIVE TRAP) */}
       {uiMode === 'negative_trap' && (
         <div className="min-h-screen bg-white text-[#1f1f1f] p-4 font-sans flex justify-center relative">
-          <div className="max-w-md w-full mb-24 overflow-hidden relative">
+          <div className="max-w-md w-full pb-28 overflow-hidden relative">
             
-            {/* Header */}
             <div className="flex justify-between items-center pt-2 pb-4">
               <h1 className="text-2xl font-normal text-[#1f1f1f] flex-1 text-left">{displayName}</h1>
               <button className="bg-[#f1f3f4] p-2 rounded-full cursor-pointer hover:bg-gray-200" onClick={() => window.location.reload()}>
@@ -228,7 +274,6 @@ export default function ReviewPage() {
             </div>
 
             <div className="py-2">
-              {/* Profile Bar */}
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-[#188038] rounded-full flex items-center justify-center font-normal text-white text-lg uppercase">S</div>
                 <div>
@@ -237,7 +282,6 @@ export default function ReviewPage() {
                 </div>
               </div>
 
-              {/* Main Stars */}
               <div className="text-center mb-6">
                 <div className="flex justify-center gap-2">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -253,7 +297,6 @@ export default function ReviewPage() {
                 {overallRating > 0 && <p className="text-[#3c4043] text-[14px] mt-2 font-medium">{getStarLabel(overallRating)}</p>}
               </div>
 
-              {/* Sub Ratings */}
               <div className="mb-6 space-y-3">
                 {currentData.ratingCategories?.map((cat) => (
                   <div key={cat} className="flex justify-between items-center">
@@ -273,14 +316,12 @@ export default function ReviewPage() {
                 ))}
               </div>
 
-              {/* Text Area */}
               <textarea 
                 value={feedbackText} onChange={(e) => setFeedbackText(e.target.value)}
                 placeholder="Tell others about your experience"
                 className="w-full bg-white border border-[#dadce0] rounded-xl p-4 text-[14px] min-h-[120px] focus:outline-none focus:border-[#006a60] mb-6 text-[#1f1f1f] placeholder-[#70757a]"
               />
 
-              {/* Photo Button - Cyan Light Bg, Dark Blue/Teal Text */}
               <label className="w-full bg-[#C2E7FF] text-[#001D35] border-0 rounded-full py-3 px-4 flex items-center justify-center gap-2 text-[15px] font-medium cursor-pointer mb-6 hover:bg-[#a8d3f3] transition-colors">
                 <Camera className="w-5 h-5 text-[#001D35]" /> Add photos and videos
                 <input type="file" className="hidden" accept="image/*,video/*" onChange={handlePhotoUpload} />
@@ -294,7 +335,6 @@ export default function ReviewPage() {
                 </div>
               )}
 
-              {/* DIRECT QUESTIONS (Cards) */}
               <div className="space-y-4 mb-8">
                 {currentData.directQuestions?.map((q) => (
                   <div key={q.id} className="bg-[#F0F4F9] p-5 rounded-2xl">
@@ -319,7 +359,6 @@ export default function ReviewPage() {
 
               <h2 className="text-[16px] font-medium text-[#1f1f1f] mb-4">Add more details to help others</h2>
               
-              {/* ACCORDION (Light Mode) */}
               <div className="rounded-2xl overflow-hidden border border-[#dadce0]">
                 {currentData.accordionSections?.map((section, idx) => (
                   <div key={section.id} className={idx !== 0 ? 'border-t border-[#dadce0]' : ''}>
@@ -331,7 +370,6 @@ export default function ReviewPage() {
                     </div>
                     
                     {openDropdown === section.id && (
-                      // 🌟 FIX: Removed extra bottom margin from container and individual questions
                       <div className="px-4 pb-4 bg-[#F0F4F9]">
                         <div className="space-y-4 pt-4">
                           {section.questions.map((q) => (
@@ -369,7 +407,6 @@ export default function ReviewPage() {
               </div>
             </div>
             
-            {/* BOTTOM POST BUTTON */}
             <div className="fixed bottom-0 left-0 w-full bg-white p-3 px-4 flex justify-center z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
               <button onClick={handlePostToDashboard} disabled={isProcessing} 
                 className="w-full py-3 rounded-full text-[15px] font-medium bg-[#006a60] text-white hover:opacity-90 transition-opacity">

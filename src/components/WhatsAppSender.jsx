@@ -56,7 +56,7 @@ export default function WhatsAppSender({ businessId, businessName }) {
             placeholder="e.g. Rahul" 
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366] transition-all"
+            className="w-full bg-gray-50 border border-gray-200 text-black rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366] transition-all"
             required
           />
         </div>
@@ -68,7 +68,7 @@ export default function WhatsAppSender({ businessId, businessName }) {
             placeholder="e.g. 9876543210" 
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366] transition-all"
+            className="w-full bg-gray-50 border border-gray-200 text-black rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366] transition-all"
             required
             maxLength="12"
           />
