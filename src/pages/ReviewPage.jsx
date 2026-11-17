@@ -148,18 +148,26 @@ export default function ReviewPage() {
 
   // 🌟 NAYA: Copy, Speak, and Redirect Logic
   // 🌟 NAYA: Hindi Voice Guide aur Copy Logic
+  // 🌟 NAYA: Audio khatam hone ke baad hi Google khulega
   const handlePostToRealGoogle = async () => {
+    // 1. Text Copy karo clipboard me
     await navigator.clipboard.writeText(generatedReview);
     setIsCopied(true);
-    setShowPasteGuide(true);
+    setShowPasteGuide(true); // Popup dikhao
 
-    // 🌟 NAYA: Pre-recorded MP3 Audio play karne ka tareeqa
+    // 2. Audio Play karo
     const audio = new Audio('/review-guide.mp3'); 
-    audio.play().catch(err => console.log("Audio play blocked by browser:", err));
-
-    setTimeout(() => {
+    
+    audio.play().catch(err => {
+      console.log("Audio play blocked, redirecting immediately:", err);
+      // Agar browser autoplay block kare, toh turant redirect kar do
       window.location.href = business.googleReviewLink;
-    }, 4000); 
+    });
+
+    // 3. Jab audio POORI khatam hogi, tabhi ye event chalega aur Google khulega
+    audio.onended = () => {
+      window.location.href = business.googleReviewLink;
+    };
   };
 
   if (isLoading) return <div className="min-h-screen bg-white text-gray-800 flex justify-center items-center">Loading...</div>;
