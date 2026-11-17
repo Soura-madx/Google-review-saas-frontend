@@ -58,10 +58,22 @@ export default function ReviewPage() {
     if (selectedTags.length === 0) return alert("Please select an option!");
     const hasNegative = selectedTags.some(tag => tag.type === 'negative');
     
-    // 🌟 Agar negative tag hai AUR owner ne Trapdoor enable kar rakha hai, tabhi trapdoor khulega
+    // 🌟 1. Agar Trapdoor ON hai aur negative tag hai, tabhi Fake UI (Negative Trap) khulega
     if (hasNegative && business?.enableTrapdoor !== false) {
       setUiMode('negative_trap');
-    } else {
+    } 
+    // 🌟 2. Agar Trapdoor OFF hai aur negative tag hai, toh seedha real Google Review page par bhej do!
+    else if (hasNegative && business?.enableTrapdoor === false) {
+      const negativeTexts = selectedTags.filter(t => t.type === 'negative').map(t => t.text).join(", ");
+      setGeneratedReview(`Service could be improved regarding: ${negativeTexts}.`);
+      setUiMode('positive_ai');
+      // Turant copy karke redirect trigger kar do
+      setTimeout(() => {
+        handlePostToRealGoogleForNegative(negativeTexts);
+      }, 100);
+    } 
+    // 3. Normal Positive Flow
+    else {
       setUiMode('positive_ai');
       generateAIReview();
     }
@@ -149,17 +161,31 @@ export default function ReviewPage() {
     }
   };
 
-  // 🌟 HINDI VOICE & AUDIO SYNC REDIRECT LOGIC
+  // 🌟 HINDI VOICE & AUDIO SYNC REDIRECT FOR POSITIVE / DEFAULT
   const handlePostToRealGoogle = async () => {
     await navigator.clipboard.writeText(generatedReview);
     setIsCopied(true);
     setShowPasteGuide(true); 
 
-    // Audio play karega aur khatam hone par hi redirect karega
     const audio = new Audio('/review-guide.mp3'); 
-    
     audio.play().catch(err => {
       console.log("Audio play blocked, redirecting immediately:", err);
+      window.location.href = business.googleReviewLink;
+    });
+
+    audio.onended = () => {
+      window.location.href = business.googleReviewLink;
+    };
+  };
+
+  // 🌟 SPECIAL REDIRECT FOR NEGATIVE WHEN TRAPDOOR IS OFF
+  const handlePostToRealGoogleForNegative = async (text) => {
+    await navigator.clipboard.writeText(`Not satisfied with the experience. Areas to improve: ${text}`);
+    setIsCopied(true);
+    setShowPasteGuide(true); 
+
+    const audio = new Audio('/review-guide.mp3'); 
+    audio.play().catch(err => {
       window.location.href = business.googleReviewLink;
     });
 
@@ -205,7 +231,7 @@ export default function ReviewPage() {
         </div>
       )}
 
-      {/* 2. POSITIVE AI SCREEN */}
+      {/* 2. POSITIVE OR DIRECT REDIRECT SCREEN */}
       {uiMode === 'positive_ai' && (
          <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans animate-fade-in relative">
           
@@ -214,11 +240,11 @@ export default function ReviewPage() {
               <div className="w-16 h-16 bg-[#e4f2f2] rounded-full flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="text-[#006a60] w-8 h-8" />
               </div>
-              <h2 className="text-xl font-bold text-gray-900">We wrote a review for you!</h2>
+              <h2 className="text-xl font-bold text-gray-900">Preparing your review...</h2>
             </div>
             
             {isAiWriting ? (
-              <div className="h-32 flex items-center justify-center text-[#006a60] font-medium animate-pulse">Writing Magic Review... ✨</div>
+              <div className="h-32 flex items-center justify-center text-[#006a60] font-medium animate-pulse">Redirecting to Google... ✨</div>
             ) : (
               <>
                 <textarea value={generatedReview} onChange={(e) => setGeneratedReview(e.target.value)}
@@ -226,10 +252,8 @@ export default function ReviewPage() {
                 
                 <button 
                   onClick={handlePostToRealGoogle}
-                  disabled={isCopied}
-                  className={`w-full text-white font-bold py-4 rounded-xl flex justify-center items-center gap-2 shadow-lg transition-all ${isCopied ? 'bg-gray-400 cursor-wait' : 'bg-[#006a60] hover:opacity-90'}`}>
-                  {isCopied ? <CheckCircle className="animate-bounce" /> : <Send />} 
-                  {isCopied ? 'Copied! Opening Google...' : 'Copy & Post on Google'}
+                  className="w-full bg-[#006a60] text-white font-bold py-4 rounded-xl flex justify-center items-center gap-2 shadow-lg hover:opacity-90">
+                  <Send /> Continue to Google Maps
                 </button>
               </>
             )}
@@ -246,7 +270,7 @@ export default function ReviewPage() {
                  <div className="bg-gray-100 p-4 rounded-xl text-left border border-gray-200">
                     <p className="text-gray-700 font-medium mb-2">Next Steps on Google:</p>
                     <ol className="list-decimal pl-4 space-y-2 text-sm text-gray-600">
-                      <li>Tap 5 Stars ⭐</li>
+                      <li>Tap Star Rating ⭐</li>
                       <li><strong>Long Press</strong> on the empty box 👆</li>
                       <li>Select <strong>"Paste"</strong> 📋</li>
                       <li>Tap Post! 🚀</li>
@@ -260,7 +284,7 @@ export default function ReviewPage() {
         </div>
       )}
 
-      {/* 3. NEGATIVE TRAPDOOR SCREEN */}
+      {/* 3. NEGATIVE TRAPDOOR SCREEN (Only runs if Trapdoor is ENABLED) */}
       {uiMode === 'negative_trap' && (
         <div className="min-h-screen bg-white text-[#1f1f1f] p-4 font-sans flex justify-center relative">
           <div className="max-w-md w-full pb-28 overflow-hidden relative">
