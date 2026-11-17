@@ -17,7 +17,7 @@ export default function ReviewPage() {
   const [generatedReview, setGeneratedReview] = useState('');
   const [isAiWriting, setIsAiWriting] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [showPasteGuide, setShowPasteGuide] = useState(false); // 🌟 NAYA: Popup Guide State
+  const [showPasteGuide, setShowPasteGuide] = useState(false);
 
   // NEGATIVE FLOW (FAKE UI)
   const [overallRating, setOverallRating] = useState(0);
@@ -45,7 +45,7 @@ export default function ReviewPage() {
     if (businessId) fetchBusiness();
   }, [businessId]);
 
-  // --- LOGIC: TRAPDOOR ---
+  // --- LOGIC: TRAPDOOR CHECK ---
   const handleTagSelect = (tagObj) => {
     if (selectedTags.some(t => t.text === tagObj.text)) {
       setSelectedTags(selectedTags.filter(t => t.text !== tagObj.text));
@@ -57,8 +57,11 @@ export default function ReviewPage() {
   const handleContinue = () => {
     if (selectedTags.length === 0) return alert("Please select an option!");
     const hasNegative = selectedTags.some(tag => tag.type === 'negative');
-    if (hasNegative) setUiMode('negative_trap');
-    else {
+    
+    // 🌟 Agar negative tag hai AUR owner ne Trapdoor enable kar rakha hai, tabhi trapdoor khulega
+    if (hasNegative && business?.enableTrapdoor !== false) {
+      setUiMode('negative_trap');
+    } else {
       setUiMode('positive_ai');
       generateAIReview();
     }
@@ -146,25 +149,20 @@ export default function ReviewPage() {
     }
   };
 
-  // 🌟 NAYA: Copy, Speak, and Redirect Logic
-  // 🌟 NAYA: Hindi Voice Guide aur Copy Logic
-  // 🌟 NAYA: Audio khatam hone ke baad hi Google khulega
+  // 🌟 HINDI VOICE & AUDIO SYNC REDIRECT LOGIC
   const handlePostToRealGoogle = async () => {
-    // 1. Text Copy karo clipboard me
     await navigator.clipboard.writeText(generatedReview);
     setIsCopied(true);
-    setShowPasteGuide(true); // Popup dikhao
+    setShowPasteGuide(true); 
 
-    // 2. Audio Play karo
+    // Audio play karega aur khatam hone par hi redirect karega
     const audio = new Audio('/review-guide.mp3'); 
     
     audio.play().catch(err => {
       console.log("Audio play blocked, redirecting immediately:", err);
-      // Agar browser autoplay block kare, toh turant redirect kar do
       window.location.href = business.googleReviewLink;
     });
 
-    // 3. Jab audio POORI khatam hogi, tabhi ye event chalega aur Google khulega
     audio.onended = () => {
       window.location.href = business.googleReviewLink;
     };
@@ -228,7 +226,7 @@ export default function ReviewPage() {
                 
                 <button 
                   onClick={handlePostToRealGoogle}
-                  disabled={isCopied} // Prevent multiple clicks
+                  disabled={isCopied}
                   className={`w-full text-white font-bold py-4 rounded-xl flex justify-center items-center gap-2 shadow-lg transition-all ${isCopied ? 'bg-gray-400 cursor-wait' : 'bg-[#006a60] hover:opacity-90'}`}>
                   {isCopied ? <CheckCircle className="animate-bounce" /> : <Send />} 
                   {isCopied ? 'Copied! Opening Google...' : 'Copy & Post on Google'}
@@ -237,10 +235,10 @@ export default function ReviewPage() {
             )}
           </div>
 
-          {/* 🌟 NAYA: Guide Overlay Popup */}
+          {/* Guide Overlay Popup */}
           {showPasteGuide && (
             <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center p-4 animate-fade-in">
-               <div className="bg-white rounded-3xl p-8 max-w-sm text-center shadow-2xl animate-slide-up">
+               <div className="bg-white rounded-3xl p-8 max-w-sm text-center shadow-2xl">
                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <CheckCircle className="w-10 h-10 text-green-600" />
                  </div>
@@ -262,7 +260,7 @@ export default function ReviewPage() {
         </div>
       )}
 
-      {/* 3. EXACT GOOGLE MOBILE LIGHT UI (NEGATIVE TRAP) */}
+      {/* 3. NEGATIVE TRAPDOOR SCREEN */}
       {uiMode === 'negative_trap' && (
         <div className="min-h-screen bg-white text-[#1f1f1f] p-4 font-sans flex justify-center relative">
           <div className="max-w-md w-full pb-28 overflow-hidden relative">

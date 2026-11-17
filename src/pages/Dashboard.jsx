@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
 import axios from "axios";
 import { Copy, CheckCircle } from "lucide-react"; 
-import WhatsAppSender from '../components/WhatsAppSender'; // Import WhatsApp Component
+import WhatsAppSender from '../components/WhatsAppSender'; 
 
 export default function Dashboard() {
   const [profile, setProfile] = useState(null);
@@ -56,6 +56,24 @@ export default function Dashboard() {
     }
   };
 
+  // 🌟 Trapdoor Toggle Handler in Dashboard
+  const handleToggleTrapdoor = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const newStatus = !profile.enableTrapdoor;
+      
+      const res = await axios.put(
+        "https://google-review-saas-backend.onrender.com/api/business/toggle-trapdoor",
+        { enableTrapdoor: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setProfile({ ...profile, enableTrapdoor: res.data.enableTrapdoor });
+    } catch (err) {
+      console.error("Failed to update trapdoor setting", err);
+    }
+  };
+
   if (!profile)
     return (
       <div className="text-center mt-20 animate-pulse text-blue-400 font-sans">
@@ -82,8 +100,8 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* Main Grid Layout: Split into 2 Rows/Cols for better management */}
-      <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-8">
+      {/* Main Grid Layout */}
+      <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-6">
         
         {/* QR Code Section */}
         <div className="bg-gray-800/50 backdrop-blur-lg border border-gray-700 p-6 md:p-8 rounded-3xl flex flex-col items-center justify-center text-center shadow-xl">
@@ -112,9 +130,9 @@ export default function Dashboard() {
         <div className="flex flex-col gap-6">
           
           {/* Business Info Section */}
-          <div className="bg-gray-900/50 border border-gray-800 p-6 md:p-8 rounded-3xl flex flex-col justify-center shadow-xl h-full">
+          <div className="bg-gray-900/50 border border-gray-800 p-6 md:p-8 rounded-3xl flex flex-col justify-center shadow-xl">
             <h3 className="text-sm font-medium text-gray-400 mb-2">Google Review Link Set To:</h3>
-            <p className="text-gray-300 bg-black/40 p-4 rounded-xl truncate mb-8 text-sm border border-gray-700/50">
+            <p className="text-gray-300 bg-black/40 p-4 rounded-xl truncate mb-6 text-sm border border-gray-700/50">
               {profile.googleReviewLink}
             </p>
 
@@ -134,7 +152,7 @@ export default function Dashboard() {
             {isCopied && <p className="text-green-400 text-xs text-right animate-pulse mr-1">Copied to clipboard! ✔️</p>}
           </div>
 
-          {/* 🌟 NAYA: WhatsApp Sender Box (Ab ekdam proper jagah pe aayega) */}
+          {/* WhatsApp Sender Box */}
           <WhatsAppSender 
             businessId={profile._id} 
             businessName={displayName} 
@@ -142,6 +160,24 @@ export default function Dashboard() {
           
         </div>
       </div>
+
+      {/* 🌟 Trapdoor Settings Toggle Card */}
+      <div className="bg-gray-900/50 border border-gray-800 p-6 rounded-3xl flex items-center justify-between shadow-xl">
+        <div>
+          <h3 className="text-base font-bold text-white">Negative Review Interception (Trapdoor)</h3>
+          <p className="text-xs text-gray-400 mt-1">When disabled, bad reviews will also bypass the internal form and redirect directly to Google.</p>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input 
+            type="checkbox" 
+            checked={profile.enableTrapdoor ?? true}
+            onChange={handleToggleTrapdoor}
+            className="sr-only peer"
+          />
+          <div className="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+        </label>
+      </div>
+
     </div>
   );
 }
