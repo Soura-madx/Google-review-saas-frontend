@@ -18,7 +18,7 @@ export default function WhatsAppSender({ businessId, businessName }) {
     }
 
     // TODO: Production me 'localhost' ki jagah apni actual domain daalein
-    const reviewLink = `https://google-review-saas-backend.onrender.com/rate/${businessId}`;
+    const reviewLink = `https://google-review-saas-frontend.vercel.app/rate/${businessId}`;
     const displayName = businessName || "our place";
 
     // 🌟 NAYA SMART WHATSAPP MESSAGE (With Bold text & Emojis)
