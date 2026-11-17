@@ -149,22 +149,14 @@ export default function ReviewPage() {
   // 🌟 NAYA: Copy, Speak, and Redirect Logic
   // 🌟 NAYA: Hindi Voice Guide aur Copy Logic
   const handlePostToRealGoogle = async () => {
-    // 1. Text Copy karo clipboard me
     await navigator.clipboard.writeText(generatedReview);
     setIsCopied(true);
-    setShowPasteGuide(true); // Popup dikhao
+    setShowPasteGuide(true);
 
-    // 2. Hindi me Voice Message Play karo
-    if ('speechSynthesis' in window) {
-      const msg = new SpeechSynthesisUtterance();
-      // Hindi text jo phone bol kar sunayega
-      msg.text = "Review copy ho gaya hai! Agli screen par khali box par click karke paste kar dein.";
-      msg.lang = 'hi-IN'; // 🌟 Hindi Language Set ki gayi hai
-      msg.rate = 0.95; // Thoda normal aur clear bolne ke liye speed
-      window.speechSynthesis.speak(msg);
-    }
+    // 🌟 NAYA: Pre-recorded MP3 Audio play karne ka tareeqa
+    const audio = new Audio('/review-guide.mp3'); 
+    audio.play().catch(err => console.log("Audio play blocked by browser:", err));
 
-    // 3. 4 seconds ke baad Google Maps par redirect karo
     setTimeout(() => {
       window.location.href = business.googleReviewLink;
     }, 4000); 
