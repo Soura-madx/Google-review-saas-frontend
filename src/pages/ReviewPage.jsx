@@ -58,22 +58,24 @@ export default function ReviewPage() {
     if (selectedTags.length === 0) return alert("Please select an option!");
     const hasNegative = selectedTags.some(tag => tag.type === 'negative');
     
-    // 🌟 1. Agar Trapdoor ON hai aur negative tag hai, tabhi Fake UI (Negative Trap) khulega
-    if (hasNegative && business?.enableTrapdoor !== false) {
-      setUiMode('negative_trap');
+    // 🌟 STRICT CHECK: Agar trapdoor explicitly 'false' hai, toh kabhi bhi fake UI par mat bhejo!
+    const isTrapdoorEnabled = business?.enableTrapdoor === true; 
+
+    if (hasNegative && isTrapdoorEnabled) {
+      setUiMode('negative_trap'); // Fake UI
     } 
-    // 🌟 2. Agar Trapdoor OFF hai aur negative tag hai, toh seedha real Google Review page par bhej do!
-    else if (hasNegative && business?.enableTrapdoor === false) {
+    else if (hasNegative && !isTrapdoorEnabled) {
+      // Agar trapdoor false hai aur negative tag chuna hai, toh seedha real Google review page par bhej do
       const negativeTexts = selectedTags.filter(t => t.type === 'negative').map(t => t.text).join(", ");
-      setGeneratedReview(`Service could be improved regarding: ${negativeTexts}.`);
+      setGeneratedReview(`Not satisfied regarding: ${negativeTexts}.`);
       setUiMode('positive_ai');
-      // Turant copy karke redirect trigger kar do
+      
       setTimeout(() => {
         handlePostToRealGoogleForNegative(negativeTexts);
       }, 100);
     } 
-    // 3. Normal Positive Flow
     else {
+      // Normal Positive Flow
       setUiMode('positive_ai');
       generateAIReview();
     }
