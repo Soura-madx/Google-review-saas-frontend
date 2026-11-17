@@ -12,30 +12,23 @@ export default function WhatsAppSender({ businessId, businessName }) {
 
     setIsRedirecting(true);
 
-    // 1. Phone Number Formatting (India ka +91 add karna agar nahi hai)
-    let formattedPhone = phone.replace(/\D/g, ''); // Sirf numbers rakhega
+    let formattedPhone = phone.replace(/\D/g, ''); 
     if (formattedPhone.length === 10) {
       formattedPhone = `91${formattedPhone}`;
     }
 
-    // 2. Apne SaaS ka Review Link
     // TODO: Production me 'localhost' ki jagah apni actual domain daalein
-    const reviewLink = `https://your-starify-domain.com/rate/${businessId}`;
+    const reviewLink = `https://google-review-saas-backend.onrender.com/rate/${businessId}`;
     const displayName = businessName || "our place";
 
-    // 3. Message Text banayein
-    const messageText = `Hi ${name}, \n\nThank you for choosing ${displayName}! We hope you had a great experience.\n\nCould you please take 10 seconds to share your quick feedback? It means a lot to us! 👇\n${reviewLink}\n\nThanks,\nTeam ${displayName}`;
+    // 🌟 NAYA SMART WHATSAPP MESSAGE (With Bold text & Emojis)
+    const messageText = `Hi *${name}*, 👋\n\nThank you for visiting *${displayName}* today! ✨\n\nWe'd love to know how we did. Could you please take just 10 seconds to rate your experience? ⭐\n\n*Tap here to leave a quick review:* 👇\n${reviewLink}\n\nThank you for your support! 🙏\nTeam *${displayName}*`;
 
-    // 4. Text ko URL safe banayein (spaces ko %20 me convert karne ke liye)
     const encodedMessage = encodeURIComponent(messageText);
-
-    // 5. WhatsApp API Link (Works on both PC Web & Mobile App)
     const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
 
-    // 6. Naye tab me WhatsApp open karein
     window.open(whatsappUrl, '_blank');
 
-    // 7. Form ko wapas reset kar dein
     setTimeout(() => {
       setName('');
       setPhone('');
@@ -45,7 +38,6 @@ export default function WhatsAppSender({ businessId, businessName }) {
 
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm max-w-sm">
-      {/* Header */}
       <div className="flex items-center gap-3 mb-5">
         <div className="w-12 h-12 bg-[#25D366] bg-opacity-10 rounded-full flex items-center justify-center">
           <MessageCircle className="w-6 h-6 text-[#25D366]" />
@@ -56,7 +48,6 @@ export default function WhatsAppSender({ businessId, businessName }) {
         </div>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSend} className="space-y-4">
         <div>
           <label className="text-[13px] font-medium text-gray-700 mb-1 block">Customer Name</label>
