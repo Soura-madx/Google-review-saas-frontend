@@ -17,11 +17,9 @@ export default function WhatsAppSender({ businessId, businessName }) {
       formattedPhone = `91${formattedPhone}`;
     }
 
-    // TODO: Production me 'localhost' ki jagah apni actual domain daalein
-    const reviewLink = `https://google-review-saas-frontend.vercel.app/rate/${businessId}`;
+    const reviewLink = `${window.location.origin}/rate/${businessId}`;
     const displayName = businessName || "our place";
 
-    // 🌟 NAYA SMART WHATSAPP MESSAGE (With Bold text & Emojis)
     const messageText = `Hi *${name}*, 👋\n\nThank you for visiting *${displayName}* today! ✨\n\nWe'd love to know how we did. Could you please take just 10 seconds to rate your experience? ⭐\n\n*Tap here to leave a quick review:* 👇\n${reviewLink}\n\nThank you for your support! 🙏\nTeam *${displayName}*`;
 
     const encodedMessage = encodeURIComponent(messageText);
@@ -37,38 +35,39 @@ export default function WhatsAppSender({ businessId, businessName }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm max-w-sm">
+    // 🌟 FIX: w-full aur dark glass theme match kiya taaki mobile par overflow na ho
+    <div className="w-full min-w-0 bg-gray-900/50 border border-gray-800 p-5 sm:p-6 rounded-3xl shadow-xl">
       <div className="flex items-center gap-3 mb-5">
-        <div className="w-12 h-12 bg-[#25D366] bg-opacity-10 rounded-full flex items-center justify-center">
+        <div className="w-11 h-11 bg-[#25D366]/15 rounded-full flex items-center justify-center shrink-0">
           <MessageCircle className="w-6 h-6 text-[#25D366]" />
         </div>
-        <div>
-          <h2 className="text-[16px] font-bold text-gray-900">Request Review</h2>
-          <p className="text-[13px] text-gray-500">Send link via WhatsApp</p>
+        <div className="min-w-0">
+          <h2 className="text-base font-bold text-white truncate">Request Review</h2>
+          <p className="text-xs text-gray-400 truncate">Send link directly via WhatsApp</p>
         </div>
       </div>
 
       <form onSubmit={handleSend} className="space-y-4">
         <div>
-          <label className="text-[13px] font-medium text-gray-700 mb-1 block">Customer Name</label>
+          <label className="text-xs font-medium text-gray-400 mb-1.5 block">Customer Name</label>
           <input 
             type="text" 
             placeholder="e.g. Rahul" 
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-200 text-black rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366] transition-all"
+            className="w-full bg-black/40 border border-gray-700/60 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#25D366] transition-all"
             required
           />
         </div>
         
         <div>
-          <label className="text-[13px] font-medium text-gray-700 mb-1 block">WhatsApp Number</label>
+          <label className="text-xs font-medium text-gray-400 mb-1.5 block">WhatsApp Number</label>
           <input 
             type="tel" 
             placeholder="e.g. 9876543210" 
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-200 text-black rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366] transition-all"
+            className="w-full bg-black/40 border border-gray-700/60 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#25D366] transition-all"
             required
             maxLength="12"
           />
@@ -76,17 +75,17 @@ export default function WhatsAppSender({ businessId, businessName }) {
 
         <button 
           type="submit"
-          className={`w-full py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all mt-2 ${
-            isRedirecting ? 'bg-[#1da851]' : 'bg-[#25D366] hover:bg-[#20bd5a]'
+          className={`w-full py-3.5 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-all shadow-lg ${
+            isRedirecting ? 'bg-[#1da851]' : 'bg-[#25D366] hover:bg-[#20bd5a] shadow-[#25D366]/20'
           }`}
         >
           {isRedirecting ? (
             <>
-              <ExternalLink className="w-5 h-5 animate-pulse" /> Opening WhatsApp...
+              <ExternalLink className="w-4 h-4 animate-pulse" /> Opening WhatsApp...
             </>
           ) : (
             <>
-              <Send className="w-5 h-5" /> Send Request
+              <Send className="w-4 h-4" /> Send Request
             </>
           )}
         </button>
