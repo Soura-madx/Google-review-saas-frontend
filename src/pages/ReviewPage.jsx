@@ -58,24 +58,16 @@ export default function ReviewPage() {
     if (selectedTags.length === 0) return alert("Please select an option!");
     const hasNegative = selectedTags.some(tag => tag.type === 'negative');
     
-    // 🌟 STRICT CHECK: Agar trapdoor explicitly 'false' hai, toh kabhi bhi fake UI par mat bhejo!
-    const isTrapdoorEnabled = business?.enableTrapdoor === true; 
-
-    if (hasNegative && isTrapdoorEnabled) {
-      setUiMode('negative_trap'); // Fake UI
+    // 🌟 1. Agar Trapdoor ON hai aur negative tag hai, tabhi Fake UI khulega
+    if (hasNegative && business?.enableTrapdoor !== false) {
+      setUiMode('negative_trap');
     } 
-    else if (hasNegative && !isTrapdoorEnabled) {
-      // Agar trapdoor false hai aur negative tag chuna hai, toh seedha real Google review page par bhej do
-      const negativeTexts = selectedTags.filter(t => t.type === 'negative').map(t => t.text).join(", ");
-      setGeneratedReview(`Not satisfied regarding: ${negativeTexts}.`);
-      setUiMode('positive_ai');
-      
-      setTimeout(() => {
-        handlePostToRealGoogleForNegative(negativeTexts);
-      }, 100);
+    // 🌟 2. Agar Trapdoor OFF hai aur negative tag hai, toh BINA KISI AUDIO/POPUP KE SEEDHA GOOGLE KHOLO!
+    else if (hasNegative && business?.enableTrapdoor === false) {
+      window.location.href = business.googleReviewLink;
     } 
+    // 3. Normal Positive Flow
     else {
-      // Normal Positive Flow
       setUiMode('positive_ai');
       generateAIReview();
     }
@@ -163,26 +155,9 @@ export default function ReviewPage() {
     }
   };
 
-  // 🌟 HINDI VOICE & AUDIO SYNC REDIRECT FOR POSITIVE / DEFAULT
+  // 🌟 POSITIVE FLOW: Sirf positive reviews ke liye audio & guide popup chalega
   const handlePostToRealGoogle = async () => {
     await navigator.clipboard.writeText(generatedReview);
-    setIsCopied(true);
-    setShowPasteGuide(true); 
-
-    const audio = new Audio('/review-guide.mp3'); 
-    audio.play().catch(err => {
-      console.log("Audio play blocked, redirecting immediately:", err);
-      window.location.href = business.googleReviewLink;
-    });
-
-    audio.onended = () => {
-      window.location.href = business.googleReviewLink;
-    };
-  };
-
-  // 🌟 SPECIAL REDIRECT FOR NEGATIVE WHEN TRAPDOOR IS OFF
-  const handlePostToRealGoogleForNegative = async (text) => {
-    await navigator.clipboard.writeText(`Not satisfied with the experience. Areas to improve: ${text}`);
     setIsCopied(true);
     setShowPasteGuide(true); 
 
@@ -233,7 +208,7 @@ export default function ReviewPage() {
         </div>
       )}
 
-      {/* 2. POSITIVE OR DIRECT REDIRECT SCREEN */}
+      {/* 2. POSITIVE AI SCREEN */}
       {uiMode === 'positive_ai' && (
          <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans animate-fade-in relative">
           
@@ -242,11 +217,11 @@ export default function ReviewPage() {
               <div className="w-16 h-16 bg-[#e4f2f2] rounded-full flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="text-[#006a60] w-8 h-8" />
               </div>
-              <h2 className="text-xl font-bold text-gray-900">Preparing your review...</h2>
+              <h2 className="text-xl font-bold text-gray-900">We wrote a review for you!</h2>
             </div>
             
             {isAiWriting ? (
-              <div className="h-32 flex items-center justify-center text-[#006a60] font-medium animate-pulse">Redirecting to Google... ✨</div>
+              <div className="h-32 flex items-center justify-center text-[#006a60] font-medium animate-pulse">Writing Magic Review... ✨</div>
             ) : (
               <>
                 <textarea value={generatedReview} onChange={(e) => setGeneratedReview(e.target.value)}
@@ -254,8 +229,10 @@ export default function ReviewPage() {
                 
                 <button 
                   onClick={handlePostToRealGoogle}
-                  className="w-full bg-[#006a60] text-white font-bold py-4 rounded-xl flex justify-center items-center gap-2 shadow-lg hover:opacity-90">
-                  <Send /> Continue to Google Maps
+                  disabled={isCopied}
+                  className={`w-full text-white font-bold py-4 rounded-xl flex justify-center items-center gap-2 shadow-lg transition-all ${isCopied ? 'bg-gray-400 cursor-wait' : 'bg-[#006a60] hover:opacity-90'}`}>
+                  {isCopied ? <CheckCircle className="animate-bounce" /> : <Send />} 
+                  {isCopied ? 'Copied! Opening Google...' : 'Copy & Post on Google'}
                 </button>
               </>
             )}
